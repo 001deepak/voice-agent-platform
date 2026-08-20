@@ -1,0 +1,15 @@
+{
+  "name": "voice-agent-platform",
+  "version": "1.0.0",
+  "description": "Self-serve platform where businesses configure their own AI voice agent, powered by Sarvam AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

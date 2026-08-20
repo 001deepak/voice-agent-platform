@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Your AI Agent Dashboard</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+  h1 { font-size: 22px; }
+  label { display: block; margin-top: 14px; font-weight: bold; }
+  input, select, textarea { width: 100%; padding: 10px; margin-top: 4px; box-sizing: border-box; }
+  textarea { height: 140px; }
+  button { margin-top: 18px; padding: 10px 18px; background: #222; color: white; border: none; cursor: pointer; }
+  #message { margin-top: 14px; }
+  .agent-card { border: 1px solid #ddd; padding: 12px; margin-top: 10px; border-radius: 6px; }
+</style>
+</head>
+<body>
+  <h1 id="welcome">Welcome</h1>
+  <p>Configure your AI voice agent below. This is your AI employee — describe exactly how it should talk to your callers.</p>
+
+  <form id="agentForm">
+    <label>Agent name</label>
+    <input type="text" id="agentName" placeholder="e.g. Priya, Front Desk Assistant" required />
+
+    <label>Language</label>
+    <select id="language">
+      <option value="te-IN">Telugu</option>
+      <option value="hi-IN">Hindi</option>
+      <option value="ta-IN">Tamil</option>
+      <option value="en-IN">English (India)</option>
+    </select>
+
+    <label>What should this agent do? (be as specific as possible)</label>
+    <textarea id="script" placeholder="You are a friendly assistant for [Business Name]. Greet the caller, ask what they need, answer common questions about [product/service], and book an appointment if they're interested. Ask for name, phone number, and preferred time."></textarea>
+
+    <button type="submit">Create / Update Agent</button>
+  </form>
+
+  <div id="message"></div>
+  <h2>Your Agents</h2>
+  <div id="agentList"></div>
+
+<script>
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/index.html';
+document.getElementById('welcome').textContent = 'Welcome, ' + localStorage.getItem('businessName');
+
+async function loadAgents() {
+  const res = await fetch('/api/agents', { headers: { Authorization: 'Bearer ' + token } });
+  const data = await res.json();
+  const list = document.getElementById('agentList');
+  list.innerHTML = '';
+  (data.agents || []).forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'agent-card';
+    div.innerHTML = `<strong>${a.agentName}</strong> (${a.language})<br><small>${a.script}</small>`;
+    list.appendChild(div);
+  });
+}
+
+document.getElementById('agentForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const res = await fetch('/api/agent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+    body: JSON.stringify({
+      agentName: document.getElementById('agentName').value,
+      language: document.getElementById('language').value,
+      script: document.getElementById('script').value,
+    }),
+  });
+  const data = await res.json();
+  document.getElementById('message').textContent = res.ok
+    ? 'Agent created successfully!'
+    : ('Error: ' + (data.error || 'unknown error'));
+  if (res.ok) { document.getElementById('agentForm').reset(); loadAgents(); }
+});
+
+loadAgents();
+</script>
+</body>
+</html>
