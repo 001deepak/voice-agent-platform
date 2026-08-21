@@ -1,82 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Your AI Agent Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VoiceAgent Platform</title>
 <style>
-  body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
-  h1 { font-size: 22px; }
-  label { display: block; margin-top: 14px; font-weight: bold; }
-  input, select, textarea { width: 100%; padding: 10px; margin-top: 4px; box-sizing: border-box; }
-  textarea { height: 140px; }
-  button { margin-top: 18px; padding: 10px 18px; background: #222; color: white; border: none; cursor: pointer; }
-  #message { margin-top: 14px; }
-  .agent-card { border: 1px solid #ddd; padding: 12px; margin-top: 10px; border-radius: 6px; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  padding: 20px 0;
+  margin-bottom: 40px;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.welcome {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 40px;
+  margin-bottom: 40px;
+}
+
+.welcome h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome p {
+  color: #cbd5e1;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #f1f5f9;
+  padding-left: 12px;
+  border-left: 4px solid;
+  border-image: linear-gradient(180deg, #60a5fa, #a78bfa) 1;
+}
+
+.form-box {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #f1f5f9;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  display: none;
+}
+
+.message.show {
+  display: block;
+}
+
+.message.success {
+  background: rgba(34, 197, 94, 0.1);
+  border-left: 3px solid #22c55e;
+  color: #86efac;
+}
+
+.message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid #ef4444;
+  color: #fca5a5;
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.agent-card {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.05), rgba(167, 139, 250, 0.05));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.agent-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+.agent-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.agent-info {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.agent-actions button {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
+#testSection {
+  display: none;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+}
+
+#testSection.show {
+  display: block;
+}
+
+#chatHistory {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  height: 350px;
+  overflow-y: auto;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.chat-msg {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.msg-user {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: white;
+  text-align: right;
+  margin-left: 40px;
+}
+
+.msg-agent {
+  background: rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+  margin-right: 40px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.msg-agent audio {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input input {
+  flex: 1;
+}
+
+.chat-input button {
+  width: 100px;
+}
 </style>
 </head>
 <body>
-  <h1 id="welcome">Welcome</h1>
-  <p>Configure your AI voice agent below. This is your AI employee — describe exactly how it should talk to your callers.</p>
 
-  <form id="agentForm">
-    <label>Agent name</label>
-    <input type="text" id="agentName" placeholder="e.g. Priya, Front Desk Assistant" required />
+<header>
+  <div class="header-content">
+    <div class="logo">🎙️ VoiceAgent</div>
+    <div>
+      <span id="username" style="color: #cbd5e1; margin-right: 20px;"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</header>
 
-    <label>Language</label>
-    <select id="language">
-      <option value="te-IN">Telugu</option>
-      <option value="hi-IN">Hindi</option>
-      <option value="ta-IN">Tamil</option>
-      <option value="en-IN">English (India)</option>
-    </select>
+<div class="container">
 
-    <label>What should this agent do? (be as specific as possible)</label>
-    <textarea id="script" placeholder="You are a friendly assistant for [Business Name]. Greet the caller, ask what they need, answer common questions about [product/service], and book an appointment if they're interested. Ask for name, phone number, and preferred time."></textarea>
+  <div class="welcome">
+    <h1>Welcome to VoiceAgent Platform</h1>
+    <p>Create AI voice agents powered by Sarvam AI (thinking) + Cartesia (ultra-fast voice). Handle customer calls with natural, low-latency conversations.</p>
+  </div>
 
-    <button type="submit">Create / Update Agent</button>
-  </form>
+  <div class="section">
+    <h2 class="section-title">Create New Agent</h2>
+    <div class="form-box">
+      <form id="agentForm">
+        <div class="form-group">
+          <label>Agent Name</label>
+          <input type="text" id="agentName" placeholder="e.g., Priya, Support-Bot" required>
+        </div>
+        <div class="form-group">
+  <label>Language</label>
+  <select id="language" required>
+    <option value="te-IN">Telugu (తెలుగు)</option>
+    <option value="hi-IN">Hindi (हिंदी)</option>
+    <option value="ta-IN">Tamil (தமிழ்)</option>
+    <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+    <option value="ml-IN">Malayalam (മലയാളം)</option>
+    <option value="en-IN">English</option>
+  </select>
+</div>
+        <div class="form-group">
+          <label>Agent Instructions</label>
+          <textarea id="script" placeholder="Describe how your agent should behave." required></textarea>
+        </div>
+        <button type="submit" class="btn-full">Create Agent</button>
+      </form>
+      <div id="message" class="message"></div>
+    </div>
+  </div>
 
-  <div id="message"></div>
-  <h2>Your Agents</h2>
-  <div id="agentList"></div>
+  <div class="section">
+    <h2 class="section-title">Your AI Employees</h2>
+    <div id="agentList" class="agents-grid">
+      <div class="empty">
+        <p>No agents yet. Create your first one above!</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="testSection">
+    <h2 class="section-title">Test Your Agent</h2>
+    <p id="testName" style="color: #94a3b8;"></p>
+    <div id="chatHistory"></div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <button onclick="closeTest()" style="margin-top: 16px; width: 100%;">Close</button>
+  </div>
+
+</div>
 
 <script>
 const token = localStorage.getItem('token');
-if (!token) window.location.href = '/index.html';
-document.getElementById('welcome').textContent = 'Welcome, ' + localStorage.getItem('businessName');
+const business = localStorage.getItem('businessName');
+
+if (!token) {
+  window.location.href = '/index.html';
+}
+
+document.getElementById('username').textContent = `Welcome, ${business || 'User'}`;
+
+let agentId = null;
 
 async function loadAgents() {
-  const res = await fetch('/api/agents', { headers: { Authorization: 'Bearer ' + token } });
+  const res = await fetch('/api/agents', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
   const data = await res.json();
   const list = document.getElementById('agentList');
+
+  if (!data.agents || data.agents.length === 0) {
+    list.innerHTML = '<div class="empty"><p>No agents yet</p></div>';
+    return;
+  }
+
   list.innerHTML = '';
-  (data.agents || []).forEach(a => {
-    const div = document.createElement('div');
-    div.className = 'agent-card';
-    div.innerHTML = `<strong>${a.agentName}</strong> (${a.language})<br><small>${a.script}</small>`;
-    list.appendChild(div);
+  data.agents.forEach(agent => {
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.innerHTML = `
+      <div class="agent-name">${agent.agentName}</div>
+      <div class="agent-info">
+        <strong>Language:</strong> ${agent.language}<br>
+        <strong>Instructions:</strong> ${agent.script.substring(0, 50)}...
+      </div>
+      <div class="agent-actions">
+        <button onclick="testAgent('${agent.id}', '${agent.agentName}')">Test</button>
+      </div>
+    `;
+    list.appendChild(card);
   });
 }
 
 document.getElementById('agentForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  
   const res = await fetch('/api/agent', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
     body: JSON.stringify({
       agentName: document.getElementById('agentName').value,
       language: document.getElementById('language').value,
-      script: document.getElementById('script').value,
-    }),
+      script: document.getElementById('script').value
+    })
   });
+
+  const msg = document.getElementById('message');
   const data = await res.json();
-  document.getElementById('message').textContent = res.ok
-    ? 'Agent created successfully!'
-    : ('Error: ' + (data.error || 'unknown error'));
-  if (res.ok) { document.getElementById('agentForm').reset(); loadAgents(); }
+  
+  if (res.ok) {
+    msg.textContent = '✓ Agent created!';
+    msg.className = 'message success show';
+    document.getElementById('agentForm').reset();
+    loadAgents();
+  } else {
+    msg.textContent = '✗ ' + (data.error || 'Error');
+    msg.className = 'message error show';
+  }
 });
+
+function testAgent(id, name) {
+  agentId = id;
+  document.getElementById('testName').textContent = 'Chatting with ' + name;
+  document.getElementById('testSection').classList.add('show');
+  document.getElementById('chatHistory').innerHTML = '';
+  document.getElementById('userInput').value = '';
+}
+
+function closeTest() {
+  agentId = null;
+  document.getElementById('testSection').classList.remove('show');
+}
+
+async function sendMessage() {
+  const msg = document.getElementById('userInput').value;
+  if (!msg || !agentId) return;
+
+  const history = document.getElementById('chatHistory');
+  
+  const userDiv = document.createElement('div');
+  userDiv.className = 'chat-msg msg-user';
+  userDiv.textContent = msg;
+  history.appendChild(userDiv);
+  
+  document.getElementById('userInput').value = '';
+  history.scrollTop = history.scrollHeight;
+
+  const res = await fetch(`/api/agent/${agentId}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ userMessage: msg })
+  });
+
+  const data = await res.json();
+  const agentDiv = document.createElement('div');
+  agentDiv.className = 'chat-msg msg-agent';
+  
+  if (res.ok) {
+    agentDiv.textContent = data.agentReply;
+    if (data.audioData) {
+      const audio = document.createElement('audio');
+      audio.controls = true;
+      audio.src = data.audioData;
+      agentDiv.appendChild(audio);
+    }
+  } else {
+    agentDiv.textContent = 'Error: ' + data.error;
+  }
+  
+  history.appendChild(agentDiv);
+  history.scrollTop = history.scrollHeight;
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('businessName');
+  window.location.href = '/index.html';
+}
 
 loadAgents();
 </script>
+
 </body>
 </html>
